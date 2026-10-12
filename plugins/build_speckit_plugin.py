@@ -123,6 +123,8 @@ def _rendered_skill(source: Path, command: str) -> str:
         else:
             lines.append(line)
             found_description |= line.startswith("description:")
+            if line.startswith("description:"):
+                lines.extend(("triggers:", "  - user"))
             found_metadata |= line.startswith("metadata:")
     if not found_name or not found_description or not found_metadata:
         raise RuntimeError(
@@ -312,6 +314,8 @@ def build(output: Path) -> None:
         "---\n"
         "name: init\n"
         'description: "Set up Spec Kit\'s .specify/ scripts and templates in this project for spec-driven development. Other speckit skills run this automatically."\n'
+        "triggers:\n"
+        "  - user\n"
         "---\n\n"
         + init_body
     )

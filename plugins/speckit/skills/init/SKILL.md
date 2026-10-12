@@ -1,6 +1,8 @@
 ---
 name: init
 description: "Set up Spec Kit's .specify/ scripts and templates in this project for spec-driven development. Other speckit skills run this automatically."
+triggers:
+  - user
 ---
 
 ## Plugin Bootstrap

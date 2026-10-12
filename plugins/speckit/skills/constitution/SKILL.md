@@ -1,6 +1,8 @@
 ---
 name: constitution
 description: "Create or update the project constitution from interactive or provided principle inputs."
+triggers:
+  - user
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/constitution.md"

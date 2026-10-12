@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -65,6 +66,7 @@ def test_plugin_skills_have_expected_structure() -> None:
         fields = frontmatter.group(1)
         assert re.search(rf'^name: "?{re.escape(skill_dir.name)}"?$', fields, re.MULTILINE)
         assert re.search(r"^description:\s*\S", fields, re.MULTILINE)
+        assert yaml.safe_load(fields)["triggers"] == ["user"]
         assert "## Plugin Bootstrap" in text
         assert not CORE_REFERENCE.search(text)
         assert "taskstoissues" not in text.lower()

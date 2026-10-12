@@ -1,6 +1,8 @@
 ---
 name: implement
 description: "Execute the implementation plan by processing and executing all tasks defined in tasks.md"
+triggers:
+  - user
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/implement.md"

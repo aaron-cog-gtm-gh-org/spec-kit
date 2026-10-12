@@ -1,6 +1,8 @@
 ---
 name: checklist
 description: "Generate a custom checklist for the current feature based on user requirements."
+triggers:
+  - user
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/checklist.md"
