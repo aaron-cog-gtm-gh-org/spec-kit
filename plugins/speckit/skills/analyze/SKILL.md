@@ -1,14 +1,14 @@
 ---
 name: analyze
-description: "Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation."
-triggers:
-  - user
+description: "Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation. Only use in projects that have opted into Spec Kit (a .specify/ directory exists at the repo root) or when the user has invoked a /speckit: command in this session."
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/analyze.md"
 ---
 
 ## Plugin Bootstrap
+
+**Opt-in check:** If the user did not invoke this skill directly (by typing `/speckit:<name>`) and has not invoked any `/speckit:` command earlier in this session, first check whether `.specify/` exists at the project root. If it does not, this project has not opted into Spec Kit: stop following this skill and continue the task normally without Spec Kit.
 
 Before anything else, from the project root run:
 `bash "<BASE_DIR>/../../assets/speckit-bootstrap.sh"`

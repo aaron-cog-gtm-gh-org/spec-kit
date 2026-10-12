@@ -1,6 +1,6 @@
 ---
 name: init
-description: "Set up Spec Kit's .specify/ scripts and templates in this project for spec-driven development. Other speckit skills run this automatically."
+description: "Opt this project into Spec Kit spec-driven development: installs .specify/ scripts and templates. After opting in, the other speckit skills activate automatically as needed."
 triggers:
   - user
 ---

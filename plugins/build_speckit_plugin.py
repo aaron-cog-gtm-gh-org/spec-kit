@@ -15,6 +15,7 @@ import tomllib
 from pathlib import Path
 
 from packaging.version import Version
+import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,23 @@ CORE_COMMAND_REFERENCE = re.compile(
     r"/speckit-(constitution|specify|clarify|plan|checklist|tasks|analyze|implement|converge)\b"
 )
 FRONTMATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.DOTALL)
+OPT_IN_NOTE = (
+    "Only use in projects that have opted into Spec Kit (a .specify/ directory "
+    "exists at the repo root) or when the user has invoked a /speckit: command "
+    "in this session."
+)
+OPT_IN_GUARD = (
+    "**Opt-in check:** If the user did not invoke this skill directly (by typing "
+    "`/speckit:<name>`) and has not invoked any `/speckit:` command earlier in "
+    "this session, first check whether `.specify/` exists at the project root. "
+    "If it does not, this project has not opted into Spec Kit: stop following "
+    "this skill and continue the task normally without Spec Kit."
+)
+INIT_DESCRIPTION = (
+    "Opt this project into Spec Kit spec-driven development: installs .specify/ "
+    "scripts and templates. After opting in, the other speckit skills activate "
+    "automatically as needed."
+)
 
 
 BOOTSTRAP_SCRIPT = r'''#!/usr/bin/env bash
@@ -101,6 +119,12 @@ where `<BASE_DIR>` is the "Base directory" shown for this skill. If no base dire
 This idempotently installs Spec Kit's scripts and templates into `.specify/`. Then continue below.
 '''
 
+WORKFLOW_BOOTSTRAP_INSTRUCTIONS = BOOTSTRAP_INSTRUCTIONS.replace(
+    "## Plugin Bootstrap\n\n",
+    "## Plugin Bootstrap\n\n" + OPT_IN_GUARD + "\n\n",
+    1,
+)
+
 
 def _rendered_skill(source: Path, command: str) -> str:
     if not source.is_file():
@@ -120,11 +144,24 @@ def _rendered_skill(source: Path, command: str) -> str:
             found_name = True
         elif line.startswith("compatibility:"):
             continue
+        elif line.startswith("description:"):
+            try:
+                description = yaml.safe_load(line)["description"]
+            except (KeyError, TypeError, yaml.YAMLError) as exc:
+                raise RuntimeError(
+                    f"Rendered skill has an invalid description: {source}"
+                ) from exc
+            if not isinstance(description, str):
+                raise RuntimeError(
+                    f"Rendered skill has a non-string description: {source}"
+                )
+            lines.append(
+                "description: "
+                + json.dumps(f"{description} {OPT_IN_NOTE}")
+            )
+            found_description = True
         else:
             lines.append(line)
-            found_description |= line.startswith("description:")
-            if line.startswith("description:"):
-                lines.extend(("triggers:", "  - user"))
             found_metadata |= line.startswith("metadata:")
     if not found_name or not found_description or not found_metadata:
         raise RuntimeError(
@@ -146,7 +183,7 @@ def _rendered_skill(source: Path, command: str) -> str:
         "---\n"
         + "\n".join(lines)
         + "\n---\n\n"
-        + BOOTSTRAP_INSTRUCTIONS
+        + WORKFLOW_BOOTSTRAP_INSTRUCTIONS
         + "\n"
         + rewritten_body
     )
@@ -313,7 +350,7 @@ def build(output: Path) -> None:
     init_skill = (
         "---\n"
         "name: init\n"
-        'description: "Set up Spec Kit\'s .specify/ scripts and templates in this project for spec-driven development. Other speckit skills run this automatically."\n'
+        f"description: {json.dumps(INIT_DESCRIPTION)}\n"
         "triggers:\n"
         "  - user\n"
         "---\n\n"

@@ -12,6 +12,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from plugins.build_speckit_plugin import INIT_DESCRIPTION, OPT_IN_GUARD, OPT_IN_NOTE
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = PROJECT_ROOT / "plugins" / "speckit"
@@ -66,7 +68,19 @@ def test_plugin_skills_have_expected_structure() -> None:
         fields = frontmatter.group(1)
         assert re.search(rf'^name: "?{re.escape(skill_dir.name)}"?$', fields, re.MULTILINE)
         assert re.search(r"^description:\s*\S", fields, re.MULTILINE)
-        assert yaml.safe_load(fields)["triggers"] == ["user"]
+        metadata = yaml.safe_load(fields)
+        body = text[frontmatter.end() :]
+        if skill_dir.name == "init":
+            assert metadata["triggers"] == ["user"]
+            assert metadata["description"] == INIT_DESCRIPTION
+            assert OPT_IN_GUARD not in body
+        else:
+            assert "triggers" not in metadata
+            assert metadata["description"].endswith(OPT_IN_NOTE)
+            assert (
+                f"## Plugin Bootstrap\n\n{OPT_IN_GUARD}\n\nBefore anything else"
+                in body
+            )
         assert "## Plugin Bootstrap" in text
         assert not CORE_REFERENCE.search(text)
         assert "taskstoissues" not in text.lower()

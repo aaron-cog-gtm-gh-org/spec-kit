@@ -18,8 +18,12 @@ devin plugins install aaron-cog-gtm-gh-org/spec-kit#plugins/speckit
 Open **Customize → Plugins → From repository**, enter
 `aaron-cog-gtm-gh-org/spec-kit`, and set the subdirectory to `plugins/speckit`.
 
-All skills are user-invoked only (`triggers: [user]`), so Devin will not start
-them on its own; install at Personal scope to keep them to your own sessions.
+## Opting in
+
+Run `/speckit:init` (or any `/speckit:` command) in a repository to opt in; this
+creates `.specify/`. After that, Devin uses the workflow skills automatically
+as needed. In repositories without `.specify/`, Devin ignores them unless you
+invoke one. Install at Personal scope to keep the plugin to your own sessions.
 
 ## Workflow
 
