@@ -637,6 +637,22 @@ class TestGetInvokeSeparatorTolerance:
         })
         assert common.get_invoke_separator(self._repo(tmp_path, body)) == "-"
 
+    def test_colon_separator_is_honoured(self, tmp_path: Path):
+        common = self._load_common()
+        body = json.dumps({
+            "default_integration": "devin",
+            "integration_settings": {"devin": {"invoke_separator": ":"}},
+        })
+        assert common.get_invoke_separator(self._repo(tmp_path, body)) == ":"
+
+    def test_unknown_separator_falls_back_to_dot(self, tmp_path: Path):
+        common = self._load_common()
+        body = json.dumps({
+            "default_integration": "devin",
+            "integration_settings": {"devin": {"invoke_separator": "/"}},
+        })
+        assert common.get_invoke_separator(self._repo(tmp_path, body)) == "."
+
 
 @pytest.mark.skipif(
     not (HAS_PWSH or _WINDOWS_POWERSHELL), reason="no PowerShell available"

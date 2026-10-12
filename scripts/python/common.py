@@ -705,7 +705,7 @@ def get_invoke_separator(repo_root: Path) -> str:
     settings = state.get("integration_settings")
     if isinstance(key, str) and isinstance(settings, dict):
         entry = settings.get(key)
-        if isinstance(entry, dict) and entry.get("invoke_separator") in {".", "-"}:
+        if isinstance(entry, dict) and entry.get("invoke_separator") in {".", "-", ":"}:
             return entry["invoke_separator"]
     return "."
 

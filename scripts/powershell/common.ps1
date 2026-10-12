@@ -292,7 +292,7 @@ function Get-InvokeSeparator {
                 $settingProperty = $state.integration_settings.PSObject.Properties[$key]
                 if ($settingProperty) {
                     $setting = $settingProperty.Value
-                    if ($setting -and ($setting.invoke_separator -eq '.' -or $setting.invoke_separator -eq '-')) {
+                    if ($setting -and ($setting.invoke_separator -eq '.' -or $setting.invoke_separator -eq '-' -or $setting.invoke_separator -eq ':')) {
                         $separator = [string]$setting.invoke_separator
                     }
                 }

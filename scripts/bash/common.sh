@@ -266,7 +266,7 @@ get_invoke_separator() {
             local jq_separator
             if jq_separator=$(jq -r '(.default_integration // .integration // "") as $k | if $k == "" then "." else (.integration_settings[$k].invoke_separator // ".") end' "$integration_json" 2>/dev/null); then
                 case "$jq_separator" in
-                    "."|"-") separator="$jq_separator"; parsed=1 ;;
+                    "."|"-"|":") separator="$jq_separator"; parsed=1 ;;
                 esac
             fi
         fi
@@ -285,7 +285,7 @@ try:
     separator = "."
     if isinstance(key, str) and isinstance(settings, dict):
         entry = settings.get(key)
-        if isinstance(entry, dict) and entry.get("invoke_separator") in {".", "-"}:
+        if isinstance(entry, dict) and entry.get("invoke_separator") in {".", "-", ":"}:
             separator = entry["invoke_separator"]
     print(separator)
 except Exception:
@@ -293,7 +293,7 @@ except Exception:
 PY
 ); then
                 case "$py_separator" in
-                    "."|"-") separator="$py_separator"; parsed=1 ;;
+                    "."|"-"|":") separator="$py_separator"; parsed=1 ;;
                 esac
             fi
         fi
@@ -334,9 +334,9 @@ PY
                                 if (c=="{") depth++
                                 else if (c=="}") { depth--; if (depth==0) break }
                             }
-                            if (match(obj, /"invoke_separator"[ \t\r\n]*:[ \t\r\n]*"[-.]"/)) {
+                            if (match(obj, /"invoke_separator"[ \t\r\n]*:[ \t\r\n]*"[-.:]"/)) {
                                 tok=substr(obj,RSTART,RLENGTH); s=substr(tok,length(tok)-1,1)
-                                if (s=="." || s=="-") sep=s
+                                if (s=="." || s=="-" || s==":") sep=s
                             }
                         }
                     }
@@ -344,7 +344,7 @@ PY
                 }
             ' "$integration_json" 2>/dev/null)
             case "$awk_separator" in
-                "."|"-") separator="$awk_separator" ;;
+                "."|"-"|":") separator="$awk_separator" ;;
             esac
         fi
     fi
