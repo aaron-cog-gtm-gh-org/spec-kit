@@ -1,0 +1,13 @@
+{
+  "name": "speckit",
+  "version": "1.1.4-dev.0",
+  "description": "Spec-Driven Development with GitHub Spec Kit: constitution, specify, clarify, plan, tasks, analyze, implement",
+  "repository": "https://github.com/aaron-cog-gtm-gh-org/spec-kit",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven-development",
+    "specification",
+    "planning",
+    "github-spec-kit"
+  ]
+}

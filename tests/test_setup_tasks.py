@@ -440,6 +440,16 @@ def test_bash_command_hint_rejects_invalid_invoke_separator(tasks_repo: Path) ->
 
 
 @requires_bash
+def test_bash_command_hint_uses_colon_invoke_separator(tasks_repo: Path) -> None:
+    _write_integration_state(tasks_repo, "devin", ":")
+
+    result = _run_bash_format_command(tasks_repo, "plan")
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "/speckit:plan"
+
+
+@requires_bash
 def test_bash_command_hint_normalizes_mixed_separators(tasks_repo: Path) -> None:
     _write_integration_state(tasks_repo, "copilot", ".")
 
@@ -846,6 +856,30 @@ def test_powershell_command_hint_normalizes_mixed_separators(
 
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "/speckit-git-commit"
+
+
+@pytest.mark.skipif(not (HAS_PWSH or _WINDOWS_POWERSHELL), reason="no PowerShell available")
+def test_powershell_command_hint_uses_colon_invoke_separator(
+    tasks_repo: Path,
+) -> None:
+    _write_integration_state(tasks_repo, "devin", ":")
+
+    result = _run_powershell_format_command(tasks_repo, "plan")
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "/speckit:plan"
+
+
+@pytest.mark.skipif(not (HAS_PWSH or _WINDOWS_POWERSHELL), reason="no PowerShell available")
+def test_powershell_command_hint_rejects_invalid_invoke_separator(
+    tasks_repo: Path,
+) -> None:
+    _write_integration_state(tasks_repo, "devin", "/")
+
+    result = _run_powershell_format_command(tasks_repo, "plan")
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "/speckit.plan"
 
 
 @pytest.mark.skipif(not (HAS_PWSH or _WINDOWS_POWERSHELL), reason="no PowerShell available")
